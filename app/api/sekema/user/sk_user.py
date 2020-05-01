@@ -10,3 +10,4 @@ class UserSkema(grap.ObjectType):
 class SetupUserRes(grap.ObjectType):
 	path			= grap.String()
 	status			= grap.Boolean()
+	refreshtoken	= grap.String()

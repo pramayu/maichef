@@ -56,11 +56,10 @@ class SetupUser():
 			if user:
 				try:
 					user['activeuser'] = True
-					user.save()
-					res = { 'status': True, 'path': 'activeuser' }
+					store = user.save()
+					res = { 'status': True, 'path': 'activeuser', 'user': store }
 					return res
 				except Exception as e:
-					print(e)
 					return res
 			else:
 				return res
