@@ -65,3 +65,19 @@ class SetupUser():
 				return res
 		else:
 			return res
+
+	def checkusertoken(self, userid):
+		res = { 'status': False, 'path': 'createuser' }
+		reqfields = ['id','username']
+		if len(userid) != 0:
+			try:
+				user = User.objects(id=userid).only(*reqfields).first()
+				if user:
+					res = { 'status': False, 'path': 'createuser', 'user': user }
+					return res
+				else:
+					return res
+			except Exception as e:
+				return res
+		else:
+			return res
