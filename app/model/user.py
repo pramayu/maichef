@@ -49,7 +49,7 @@ class SetupUser():
 				return res
 
 	def useractive(self, uniqpin):
-		res = { 'status': False, 'path': 'createuser' }
+		res = { 'status': False, 'path': 'activeuser' }
 		reqfields = ['id','username', 'uniquepin', 'activeuser']
 		if len(uniqpin) != 0:
 			user = User.objects(Q(uniquepin=uniqpin) and Q(activeuser=False)).only(*reqfields).first()
@@ -67,17 +67,34 @@ class SetupUser():
 			return res
 
 	def checkusertoken(self, userid):
-		res = { 'status': False, 'path': 'createuser' }
+		res = { 'status': False, 'path': 'checkusertoken' }
 		reqfields = ['id','username']
 		if len(userid) != 0:
 			try:
 				user = User.objects(id=userid).only(*reqfields).first()
 				if user:
-					res = { 'status': False, 'path': 'createuser', 'user': user }
+					res = { 'status': False, 'path': 'checkusertoken', 'user': user }
 					return res
 				else:
 					return res
 			except Exception as e:
+				return res
+		else:
+			return res
+
+	def identityuser(self, identity, password):
+		res = { 'status': False, 'path': 'identityuser' }
+		if len(identity) and len(password) != 0:
+			reqfields = ['id','username','email','hashtext']
+			user = User.objects(Q(username=identity) or Q(email=identity)).only(*reqfields).first()
+			if user:
+				match = bcrypt.checkpw(password, user['hashtext'].encode('utf-8'))
+				if match:
+					res = { 'status': True, 'path': 'identityuser', 'user': user }
+					return res
+				else:
+					return res
+			else:
 				return res
 		else:
 			return res
