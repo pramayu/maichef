@@ -73,7 +73,11 @@ class SetupUser():
 			try:
 				user = User.objects(id=userid).only(*reqfields).first()
 				if user:
-					res = { 'status': False, 'path': 'checkusertoken', 'user': user }
+					res = {
+						'user'		: user, 
+						'status'	: False,
+						'path'		: 'checkusertoken',
+					}
 					return res
 				else:
 					return res
