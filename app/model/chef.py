@@ -158,17 +158,38 @@ class SetupChef():
 					req_fields = ['id','experience']
 					chef = Chef.objects(id=self.chef_id).only(*req_fields).first()
 					if any(self.str_id == expr['strid'] for expr in chef['experience']):
-						temp = chef['experience']
-						indx = next((index for (index, expr) in enumerate(temp) if self.str_id == expr['strid']), None)
-						temp[indx]['occupation'] = occupation
-						temp[indx]['length_of_work'] = length_of_work
-						temp[indx]['work_palce'] = work_palce
-						chef.save()
-						res = { 'status': True, 'path':'experience' }
-						return res
+						try:
+							temp = chef['experience']
+							indx = next((index for (index, expr) in enumerate(temp) if self.str_id == expr['strid']), None)
+							temp[indx]['occupation'] = occupation
+							temp[indx]['length_of_work'] = length_of_work
+							temp[indx]['work_palce'] = work_palce
+							chef.save()
+							res = { 'status': True, 'path':'experience' }
+							return res
+						except Exception as e:
+							return res
 					else:
 						return res
 				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def pull_experience(self):
+		res = { 'status': False, 'path':'experience' }
+		if self.user_id and self.chef_id and self.str_id:
+			req_fields = ['id', 'experience']
+			chef = Chef.objects(id=self.chef_id).only(*req_fields).first()
+			temp = chef['experience']
+			if any(self.str_id == expr['strid'] for expr in temp):
+				try:
+					Chef.objects(id=self.chef_id).update_one(pull__experience__strid=self.str_id)
+					res = { 'status': True, 'path':'experience' }
+					return res
+				except Exception as e:
 					return res
 			else:
 				return res
