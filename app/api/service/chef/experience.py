@@ -67,3 +67,30 @@ class EditExperience(grap.Mutation):
 		else:
 			return res
 		return SetupChefRes(status=res['status'], path=res['path'])
+
+
+class PullExperience(grap.Mutation):
+	class Arguments:
+		userid 			= grap.ID()
+		strid 			= grap.ID()
+		chefid 			= grap.ID()
+
+	Output	= SetupChefRes
+
+
+	@requireauth
+	def mutate(payload, self, info, **kwargs):
+		res = { 'status': False, 'path': 'experience' }
+		if payload['isAuth'] == True:
+			if len(kwargs['chefid']) and len(kwargs['strid']) != 0:
+				user_id		= JSONDecoder(kwargs['userid'])
+				strid		= kwargs['strid']
+				chef_id		= JSONDecoder(kwargs['chefid'])
+				setup 		= SetupChef(user_id, chef_id, strid)
+				res 		= setup.pull_experience()
+				return res
+			else:
+				return res
+		else:
+			return res
+		return SetupChefRes(status=res['status'], path=res['path'])
