@@ -1,11 +1,10 @@
 import jwt
 import graphene as grap
 from app.model.user import SetupUser
+from app.model.chef import SetupChef
 from datetime import datetime, timedelta
 from app.model.blacklist import BlacklistSetup
 from app.api.sekema.user.sk_user import SetupUserRes
-from app.common.middleware.JSONDecoder import JSONDecoder
-from app.common.middleware.BSONObjctid import BSONObjctid
 from app.common.middleware.buildtoken import checktoken, buildtoken
 
 
@@ -25,12 +24,15 @@ class CheckUserToken(grap.Mutation):
 				try:
 					xreftoken	= checktoken(refreshtoken)
 					if xreftoken:
-						setup 	= SetupUser()
-						res 	= setup.checkusertoken(xreftoken['id'])
+						_setup 	= SetupUser()
+						_res 	= _setup.checkusertoken(xreftoken['id'])
+						setup_	= SetupChef(_res['user']['id'])
+						res_	= setup_.chk_chef()
 						paylaod = {
-							'id'		: str(res['user']['id']),
-							'username'	: res['user']['username'],
-							'exp'		: datetime.utcnow() + timedelta(days=5)
+							'id'		: str(_res['user']['id']),
+							'username'	: _res['user']['username'],
+							'exp'		: datetime.utcnow() + timedelta(days=5),
+							'chef'		: str(res_['chef']['id']) if res_['status'] == True else ""
 						}
 						if paylaod:
 							accessetoken = buildtoken(paylaod)
