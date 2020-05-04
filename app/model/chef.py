@@ -21,7 +21,7 @@ class Experience(db.EmbeddedDocument):
 class Honour(db.EmbeddedDocument):
 	strid 			= db.StringField()
 	institution		= db.StringField()
-	year_honour		= db.DateTimeField()
+	year_honour		= db.StringField()
 	in_the_field	= db.StringField()
 
 	meta			= {
@@ -121,13 +121,21 @@ class SetupChef():
 		else:
 			return res
 
+	def find_chef_id(self, req_fields):
+		try:
+			chef = Chef.objects(id=self.chef_id).only(*req_fields).first()
+			return chef
+		except Exception as e:
+			return []
+		
+
 	def push_experience(self, occupation, length_of_work, work_palce):
 		res = { 'status': False, 'path':'experience' }
 		if self.user_id and self.chef_id:
 			if len(length_of_work) and len(work_palce) != 0:
 				if occupation:
 					req_fields = ['id','experience']
-					chef = Chef.objects(id=self.chef_id).only(*req_fields).first()
+					chef = chef = self.find_chef_id(req_fields)
 					if chef:
 						try:
 							expr = Experience(strid=uuid4().hex,
@@ -156,7 +164,7 @@ class SetupChef():
 			if len(length_of_work) and len(work_palce) != 0:
 				if occupation:
 					req_fields = ['id','experience']
-					chef = Chef.objects(id=self.chef_id).only(*req_fields).first()
+					chef = chef = self.find_chef_id(req_fields)
 					if any(self.str_id == expr['strid'] for expr in chef['experience']):
 						try:
 							temp = chef['experience']
@@ -182,13 +190,59 @@ class SetupChef():
 		res = { 'status': False, 'path':'experience' }
 		if self.user_id and self.chef_id and self.str_id:
 			req_fields = ['id', 'experience']
-			chef = Chef.objects(id=self.chef_id).only(*req_fields).first()
+			chef = chef = self.find_chef_id(req_fields)
 			temp = chef['experience']
 			if any(self.str_id == expr['strid'] for expr in temp):
 				try:
 					Chef.objects(id=self.chef_id).update_one(pull__experience__strid=self.str_id)
 					res = { 'status': True, 'path':'experience' }
 					return res
+				except Exception as e:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def push_honour(self, instit, year_honour, in_the_field):
+		res = { 'status': False, 'path':'honour' }
+		if self.user_id and self.chef_id:
+			if len(instit) and len(year_honour) and len(in_the_field) != 0:
+				try:
+					req_fields = ['id','honour']
+					chef = self.find_chef_id(req_fields)
+					if chef:
+						honour = Honour(institution=instit,
+										strid=uuid4().hex,
+										year_honour=year_honour,
+										in_the_field=in_the_field)
+						chef.honour.append(honour)
+						chef.save()
+						res = { 'status': True, 'path':'honour' }
+						return res
+					else:
+						return res
+				except Exception as e:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def pull_honour(self):
+		res = { 'status': False, 'path':'honour' }
+		if self.user_id and self.chef_id:
+			if len(self.str_id) != 0:
+				try:
+					req_fields = ['id', 'honour']
+					chef = self.find_chef_id(req_fields)
+					temp = chef['honour']
+					if any(self.str_id == hnr['strid'] for hnr in temp):
+						Chef.objects(id=self.chef_id).update_one(pull__honour__strid=self.str_id)
+						res = { 'status': True, 'path':'honour' }
+						return res
+					else:
+						return res
 				except Exception as e:
 					return res
 			else:
