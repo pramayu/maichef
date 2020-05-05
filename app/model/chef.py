@@ -56,8 +56,8 @@ class ServiceArea(db.EmbeddedDocument):
 
 class BasicRule(db.EmbeddedDocument):
 	strid 			= db.StringField()
-	limitask		= db.StringField()
-	another			= db.ListField(db.StringField())
+	limit_task		= db.StringField()
+	rules			= db.ListField(db.StringField())
 
 	meta 			= {
 		'indexes': [
@@ -251,7 +251,7 @@ class SetupChef():
 			return res
 
 	def push_service_area(self, service_area):
-		res = { 'status': False, 'path':'honour' }
+		res = { 'status': False, 'path':'servicearea' }
 		if self.user_id and self.chef_id:
 			if len(service_area) != 0:
 				try:
@@ -261,7 +261,7 @@ class SetupChef():
 						servicearea = ServiceArea(strid=uuid4().hex, areas=service_area)
 						chef.servicearea.append(servicearea)
 						chef.save()
-						res = { 'status': True, 'path':'honour' }
+						res = { 'status': True, 'path':'servicearea' }
 						return res
 					else:
 						return res
@@ -274,7 +274,7 @@ class SetupChef():
 			return res
 
 	def pull_service_area(self):
-		res = { 'status': False, 'path':'honour' }
+		res = { 'status': False, 'path':'servicearea' }
 		if self.user_id and self.chef_id:
 			if len(self.str_id) != 0:
 				req_fields = ['id', 'servicearea']
@@ -282,8 +282,56 @@ class SetupChef():
 				if chef:
 					try:
 						Chef.objects(id=self.chef_id).update_one(pull__servicearea__strid=self.str_id)
-						res = { 'status': True, 'path':'honour' }
+						res = { 'status': True, 'path':'servicearea' }
 						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def store_basic_rule(self, limit_task, rules):
+		res = { 'status': False, 'path':'rule' }
+		if self.user_id and self.chef_id:
+			if len(limit_task) and len(rules) != 0:
+				req_fields = ['id']
+				chef = self.find_chef_id(req_fields)
+				if chef:
+					try:
+						basic_rule = BasicRule(strid=uuid4().hex, limit_task=limit_task, rules=rules)
+						chef.basicrule = basic_rule
+						chef.save()
+						res = { 'status': True, 'path':'rule' }
+						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def update_basic_rule(self, limit_task, rules):
+		res = { 'status': False, 'path':'rule' }
+		if self.user_id and self.chef_id:
+			if len(self.str_id) and len(limit_task) and len(rules) != 0:
+				req_fields = ['id', 'basicrule']
+				chef = self.find_chef_id(req_fields)
+				if chef:
+					try:
+						temp = chef['basicrule']
+						if temp['strid'] == self.str_id:
+							temp['limit_task'] = limit_task
+							temp['rules'] = rules
+							chef.save()
+							res = { 'status': True, 'path':'rule' }
+							return res
+						else:
+							return res
 					except Exception as e:
 						return res
 				else:

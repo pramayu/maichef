@@ -7,6 +7,8 @@ from app.api.service.chef.honour import PushHonour
 from app.api.service.chef.honour import PullHonour
 from app.api.service.chef.servicearea import PushServiceArea
 from app.api.service.chef.servicearea import PullServiceArea
+from app.api.service.chef.basicrule	import StoreBasicRule
+from app.api.service.chef.basicrule	import UpdatBasicRule
 
 class ChefServ(grap.ObjectType):
 	tobechef 			= ToBeChef.Field()
@@ -17,3 +19,5 @@ class ChefServ(grap.ObjectType):
 	pullhonour 			= PullHonour.Field()
 	pushservicearea		= PushServiceArea.Field()
 	pullservicearea 	= PullServiceArea.Field()
+	storebasicrule 		= StoreBasicRule.Field()
+	updatbasicrule 		= UpdatBasicRule.Field()
