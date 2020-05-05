@@ -68,7 +68,6 @@ class EditExperience(grap.Mutation):
 			return res
 		return SetupChefRes(status=res['status'], path=res['path'])
 
-
 class PullExperience(grap.Mutation):
 	class Arguments:
 		userid 			= grap.ID()

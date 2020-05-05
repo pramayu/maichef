@@ -249,3 +249,46 @@ class SetupChef():
 				return res
 		else:
 			return res
+
+	def push_service_area(self, service_area):
+		res = { 'status': False, 'path':'honour' }
+		if self.user_id and self.chef_id:
+			if len(service_area) != 0:
+				try:
+					req_fields = ['id', 'servicearea']
+					chef = self.find_chef_id(req_fields)
+					if chef:
+						servicearea = ServiceArea(strid=uuid4().hex, areas=service_area)
+						chef.servicearea.append(servicearea)
+						chef.save()
+						res = { 'status': True, 'path':'honour' }
+						return res
+					else:
+						return res
+				except Exception as e:
+					print(e)
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def pull_service_area(self):
+		res = { 'status': False, 'path':'honour' }
+		if self.user_id and self.chef_id:
+			if len(self.str_id) != 0:
+				req_fields = ['id', 'servicearea']
+				chef = self.find_chef_id(req_fields)
+				if chef:
+					try:
+						Chef.objects(id=self.chef_id).update_one(pull__servicearea__strid=self.str_id)
+						res = { 'status': True, 'path':'honour' }
+						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
