@@ -9,6 +9,7 @@ from app.api.service.chef.servicearea import PushServiceArea
 from app.api.service.chef.servicearea import PullServiceArea
 from app.api.service.chef.basicrule	import StoreBasicRule
 from app.api.service.chef.basicrule	import UpdatBasicRule
+from app.api.service.chef.setpicture import PushPictureChef
 
 class ChefServ(grap.ObjectType):
 	tobechef 			= ToBeChef.Field()
@@ -21,3 +22,4 @@ class ChefServ(grap.ObjectType):
 	pullservicearea 	= PullServiceArea.Field()
 	storebasicrule 		= StoreBasicRule.Field()
 	updatbasicrule 		= UpdatBasicRule.Field()
+	pushpicturechef 	= PushPictureChef.Field()

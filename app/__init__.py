@@ -3,8 +3,10 @@ from app.api import schema
 from flask_graphql import GraphQLView
 from flask_mongoengine import MongoEngine
 from app.config.conf import DevelopmentConf
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+load_dotenv()
 app.config.from_object(DevelopmentConf)
 db = MongoEngine(app)
 

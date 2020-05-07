@@ -39,7 +39,9 @@ class Picture(db.EmbeddedDocument):
 
 	meta			= {
 		'indexes': [
-			'strid'
+			'strid',
+			'status',
+			'publicid'
 		]
 	}
 
@@ -340,3 +342,32 @@ class SetupChef():
 				return res
 		else:
 			return res
+
+	def upload_chef_img(self, url, tipe, publicid):
+		res = { 'status': False, 'path':'upload' }
+		if self.user_id and self.chef_id:
+			if len(url) and len(tipe) and len(publicid) != 0:
+				req_fields = ['id', 'picture']
+				chef = self.find_chef_id(req_fields)
+				if chef:
+					try:
+						temp = chef['picture']
+						if len(temp) != 0:
+							indx = next((index for (index, img) in enumerate(temp) if img['status'] == True), None)
+							temp[indx]['status'] = False
+						que_img = Picture(strid=uuid4().hex, url=url, tipe=tipe, publicid=publicid)
+						chef.picture.append(que_img)
+						chef.save()
+						res = { 'status': True, 'path':'upload' }
+						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def update_chef_img(self):
+		pass
