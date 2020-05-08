@@ -343,6 +343,10 @@ class SetupChef():
 		else:
 			return res
 
+	def indx_image_true(self, temp):
+		indx = next((index for (index, img) in enumerate(temp) if img['status'] == True), None)
+		return indx
+
 	def upload_chef_img(self, url, tipe, publicid):
 		res = { 'status': False, 'path':'upload' }
 		if self.user_id and self.chef_id:
@@ -353,7 +357,7 @@ class SetupChef():
 					try:
 						temp = chef['picture']
 						if len(temp) != 0:
-							indx = next((index for (index, img) in enumerate(temp) if img['status'] == True), None)
+							indx = self.indx_image_true(temp)
 							temp[indx]['status'] = False
 						que_img = Picture(strid=uuid4().hex, url=url, tipe=tipe, publicid=publicid)
 						chef.picture.append(que_img)
@@ -369,5 +373,27 @@ class SetupChef():
 		else:
 			return res
 
-	def update_chef_img(self):
-		pass
+	def reuse_chef_img(self):
+		res = { 'status': False, 'path':'upload' }
+		if self.user_id and self.chef_id:
+			if len(self.str_id):
+				req_fields = ['id','picture']
+				chef = self.find_chef_id(req_fields)
+				temp = chef['picture']
+				if any(self.str_id == img['strid'] for img in temp):
+					try:
+						indx1 = self.indx_image_true(temp)
+						indx2 = next((index for (index, img) in enumerate(temp) if self.str_id == img['strid']), None)
+						temp[indx1]['status'] = not temp[indx1]['status']
+						temp[indx2]['status'] = not temp[indx2]['status']
+						chef.save()
+						res = { 'status': True, 'path':'upload' }
+						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res

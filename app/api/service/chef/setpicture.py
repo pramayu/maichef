@@ -41,3 +41,32 @@ class PushPictureChef(grap.Mutation):
 		else:
 			return res
 		return SetupChefRes(status=res['status'],  path=res['path'])
+
+class UseExistPicture(grap.Mutation):
+	class Arguments:
+		userid 			= grap.ID()
+		chefid 			= grap.ID()
+		strid 			= grap.ID()
+
+	Output 	= SetupChefRes
+
+
+	@requireauth
+	def mutate(payload, self, info, **kwargs):
+		res = { 'status': False, 'path': 'upload' }
+		if payload['isAuth'] == True:
+			if len(kwargs['userid']) and len(kwargs['chefid']) != 0:
+				if len(kwargs['strid']) != 0:
+					user_id		= JSONDecoder(kwargs['userid'])
+					chef_id		= JSONDecoder(kwargs['chefid'])
+					str_id		= kwargs['strid']
+					setup 		= SetupChef(user_id, chef_id, str_id)
+					res 		= setup.reuse_chef_img()
+					return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+		return SetupChefRes(status=res['status'], path=res['path'])
