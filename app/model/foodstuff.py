@@ -1,10 +1,17 @@
 import mongoengine as db
+from uuid import uuid4
 from datetime import datetime
 from app.model.chef import Chef
 from app.model.kitchentool import Kitchentool
 from app.model.categori import Categori
 from app.common.chk_input.foodstuff import chk_input
 
+class Preview(db.EmbeddedDocument):
+	strid 			= db.StringField()
+	url 			= db.StringField()
+	public_id		= db.StringField()
+	img_type		= db.StringField()
+	status 			= db.BooleanField(default=True)
 
 class Ingredient(db.EmbeddedDocument):
 	strid 			= db.StringField()
@@ -30,6 +37,7 @@ class Foodstuff(db.Document):
 	kitchentool 	= db.ListField(db.ReferenceField(Kitchentool, dbref=True))
 	build			= db.DateTimeField(default=datetime.utcnow)
 	updated 		= db.DateTimeField()
+	previews 		= db.ListField(db.EmbeddedDocumentField(Preview))
 
 	meta			= {
 		'indexes': [
@@ -192,7 +200,48 @@ class SetupFoodstuff():
 
 
 	def push_ingredient(self, ingredient):
-		pass
+		res = { 'status': False, 'path': 'ingredient' }
+		if self.user_id and self.chef_id:
+			if len(ingredient) != 0:
+				try:
+					req_fields = ['id','ingredients']
+					foodstuff = self.find_by_id(req_fields)
+					if foodstuff:
+						for ingr in ingredient:
+							xingr = Ingredient(strid=uuid4().hex, number=list(ingr.split('+'))[1],
+									ingredient=list(ingr.split('+'))[0])
+							foodstuff.ingredients.append(xingr)
+						foodstuff.save()
+						res = { 'status': True, 'path': 'ingredient' }
+						return res
+					else:
+						return res
+				except Exception as e:
+					return res
+			else:
+				return res
+		else:
+			return res
 
 	def pull_ingredient(self):
-		pass
+		res = { 'status': False, 'path': 'ingredient' }
+		if self.user_id and self.chef_id and self.foodstuff_id:
+			if len(self.str_id) != 0:
+				req_fields = ['id', 'ingredients']
+				foodstuff = self.find_by_id(req_fields)
+				if foodstuff:
+					temp = foodstuff['ingredients']
+					if any(self.str_id == ingr['strid'] for ingr in temp):
+						indx = next((indx for (indx,i) in enumerate(temp) if self.str_id==i['strid']), None)
+						temp.pop(indx)
+						foodstuff.save()
+						res = { 'status': True, 'path': 'ingredient' }
+						return res
+					else:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
