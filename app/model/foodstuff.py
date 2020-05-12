@@ -204,7 +204,6 @@ class SetupFoodstuff():
 		else:
 			return res
 
-
 	def push_ingredient(self, ingredient):
 		res = { 'status': False, 'path': 'ingredient' }
 		if self.user_id and self.chef_id:
@@ -297,6 +296,98 @@ class SetupFoodstuff():
 					else:
 						return res
 				except Exception as e:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def indx_preview_true(self, temp):
+		indx = next((indx for (indx, i) in enumerate(temp) if i['status'] == True), None)
+		return indx
+
+	def indx_preview_strd(self, temp):
+		indx = next((indx for (indx, i) in enumerate(temp) if i['strid'] == self.str_id), None)
+		return indx
+
+	def push_preview(self, url, img_type, public_id):
+		res = { 'status': False, 'path': 'preview' }
+		if self.user_id and self.chef_id:
+			if self.foodstuff_id and url and img_type and public_id:
+				req_fields = ['id', 'previews']
+				foodstuff = self.find_by_id(req_fields)
+				if foodstuff:
+					temp = foodstuff['previews']
+					try:
+						if temp:
+							indx = self.indx_preview_true(temp)
+							temp[indx]['status'] = False
+						que_prev = Preview(strid=uuid4().hex,url=url,img_type=img_type,public_id=public_id)
+						foodstuff.previews.append(que_prev)
+						foodstuff.save()
+						res = { 'status': True, 'path': 'preview' }
+						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def reuse_preview(self):
+		res = { 'status': False, 'path': 'preview' }
+		if self.user_id and self.chef_id:
+			if self.foodstuff_id:
+				if len(self.str_id) != 0:
+					try:
+						req_fields = ['id', 'previews']
+						foodstuff = self.find_by_id(req_fields)
+						if foodstuff:
+							temp = foodstuff['previews']
+							ind1 = self.indx_preview_true(temp)
+							ind2 = self.indx_preview_strd(temp)
+							temp[ind1]['status'] = not temp[ind1]['status']
+							temp[ind2]['status'] = not temp[ind2]['status']
+							foodstuff.save()
+							res = { 'status': True, 'path': 'preview' }
+							return res
+						else:
+							return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def preview_destroi(self):
+		res = { 'status': False, 'path': 'preview' }
+		if self.user_id and self.chef_id:
+			if self.foodstuff_id:
+				if len(self.str_id) != 0:
+					req_fields = ['id', 'previews']
+					foodstuff = self.find_by_id(req_fields)
+					if foodstuff:
+						try:
+							temp = foodstuff['previews']
+							indx = self.indx_preview_strd(temp)
+							if temp[indx]['status'] == False:
+								temp.pop(indx)
+								foodstuff.save()
+								res = { 'status': True, 'path': 'preview' }
+								return res
+							else:
+								return res
+						except Exception as e:
+							raise e
+							return res
+					else:
+						return res
+				else:
 					return res
 			else:
 				return res

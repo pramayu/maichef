@@ -26,3 +26,12 @@ class IMGUploadChef():
 			{ "width": self.dimens, "height": self.dimens, "crop": "fill" }
 		])
 		return res
+
+class IMGDestroiChef():
+
+	def __init__(self, public_id):
+		self.public_id = public_id
+
+	def destroi(self):
+		res = cloudinary.uploader.destroy(self.public_id)
+		return res
