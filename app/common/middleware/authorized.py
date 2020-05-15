@@ -2,7 +2,9 @@ import jwt
 from os import path
 from flask import request
 from functools import wraps
+from app.model.user import User as UserModel
 from app.common.middleware.buildtoken import checktoken
+from app.common.middleware.JSONDecoder import JSONDecoder
 
 
 def requireauth(fn):
@@ -18,8 +20,10 @@ def requireauth(fn):
 					ref_token = checktoken(x_refresh_token)
 					if ref_token:
 						try:
+							user_id = JSONDecoder(kwargs['userid'])
+							user = UserModel.objects(id=user_id).only(*['id']).first()
 							acc_token = checktoken(x_accesse_token)
-							if acc_token['id'] == kwargs['userid']:
+							if JSONDecoder(acc_token['id']) == user['id']:
 								current_user = {
 									'isAuth'	: True,
 									'id'		: acc_token['id'],

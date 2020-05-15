@@ -1,3 +1,4 @@
+from uuid import uuid4
 import mongoengine as db
 from datetime import datetime
 from app.model.user import User
@@ -86,13 +87,21 @@ class SetupFoodBasket():
 					try:
 						chefood = basket['foodchefs']
 						if any(chef_id == chfood['chef']['id'] for chfood in chefood):
-							#update user food by chef
 							indx = self.find_index_chef_id(chefood, chef_id)
+							fstuff = chefood[indx]['foodstuffs']
+							if any(self.foodstuff_id != fs['foodstuff']['id'] for fs in fstuff):
+								print("hello")
+							else:
+								return res
 						else:
-							#push new chef
-							pass
+							foodchef = Foodchef(strid=uuid4().hex, chef=chef_id)
+							fooditem = Fooditem(strid=uuid4().hex, foodstuff=self.foodstuff_id)
+							foodchef['foodstuffs'].append(fooditem)
+							basket['foodchefs'].append(foodchef)
+							basket.save()
+							res = {'status': True, 'path': 'push_food'}
+							return res
 					except Exception as e:
-						raise e
 						return res
 				else:
 					return res

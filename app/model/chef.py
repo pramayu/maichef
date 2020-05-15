@@ -137,7 +137,7 @@ class SetupChef():
 			if len(length_of_work) and len(work_palce) != 0:
 				if occupation:
 					req_fields = ['id','experience']
-					chef = chef = self.find_chef_id(req_fields)
+					chef = self.find_chef_id(req_fields)
 					if chef:
 						try:
 							expr = Experience(strid=uuid4().hex,
