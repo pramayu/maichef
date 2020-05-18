@@ -104,3 +104,33 @@ class PullFooditem(grap.Mutation):
 		else:
 			return res
 		return SetupFoodBasketRes(status=res['status'], path=res['path'])
+
+class PullFoodchef(grap.Mutation):
+
+	class Arguments:
+		userid 			= grap.ID()
+		chefid 			= grap.ID()
+		basketid 		= grap.ID()
+
+	Output 	= SetupFoodBasketRes
+
+
+	@requireauth
+	def mutate(payload, self, info, **kwargs):
+		res = {'status': False, 'path': 'pull_foodchef'}
+		if payload['isAuth'] == True:
+			if len(kwargs['userid']) and len(kwargs['basketid']):
+				if len(kwargs['chefid']) != 0:
+					user_id		= JSONDecoder(kwargs['userid'])
+					chef_id 	= JSONDecoder(kwargs['chefid'])
+					basket_id 	= JSONDecoder(kwargs['basketid'])
+					setup 		= SetupFoodBasket(user_id, None, basket_id)
+					res 		= setup.pull_foodchef(chef_id)
+					return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+		return SetupFoodBasketRes(status['status'], path=res['path'])

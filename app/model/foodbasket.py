@@ -197,9 +197,33 @@ class SetupFoodBasket():
 						else:
 							return res
 					except Exception as e:
-						print(e)
 						return res
 				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def pull_foodchef(self, chef_id):
+		res = {'status': False, 'path': 'pull_foodchef'}
+		if self.user_id and self.basket_id and chef_id:
+			basket = self.find_basket_id()
+			if basket:
+				try:
+					chefood = basket['foodchefs']
+					if any(chef_id == chfood['chef']['id'] for chfood in chefood):
+						indx = self.find_index_chef_id(chefood, chef_id)
+						if len(chefood[indx]['foodstuffs']) != 0:
+							return res
+						else:
+							chefood.pop(indx)
+							basket.save()
+							res = {'status': True, 'path': 'pull_foodchef'}
+							return res
+					else:
+						return res
+				except Exception as e:
 					return res
 			else:
 				return res
