@@ -1,9 +1,11 @@
 from uuid import uuid4
 import mongoengine as db
 from datetime import datetime
+from app.model.foodstuff import Foodstuff
 from app.model.user import User
 from app.model.chef import Chef
-from app.model.foodstuff import Foodstuff
+from app.model.kitchentool import Kitchentool
+from app.common.middleware.JSONEncoder import JSONEncoder
 
 
 class Fooditem(db.EmbeddedDocument):
@@ -23,6 +25,8 @@ class Foodchef(db.EmbeddedDocument):
 	chef 		= db.ReferenceField(Chef, dbref=True)
 	foodstuffs 	= db.ListField(db.EmbeddedDocumentField(Fooditem))
 	build	 	= db.DateTimeField(default=datetime.now)
+	kitchentool	= db.ListField(db.ReferenceField(Kitchentool, dbref=True))
+	ingredient	= db.BooleanField(default=False)
 
 	meta 		= {
 		'indexes': [
@@ -71,6 +75,11 @@ class SetupFoodBasket():
 			foodstuff = Foodstuff.objects(id=self.foodstuff_id).only(*['id', 'owner']).first()
 			if foodstuff and chef_id == foodstuff['owner']['id']:
 				return True
+
+	def find_kitchentool(self, kitchentl, kitchen_id):
+		if self.user_id and self.basket_id:
+			indx = next((idx for(idx, i) in enumerate(kitchentl) if i['kitchentool']['id'] == kitchen_id), None)
+			return indx
 
 	def build_basket(self):
 		res = {'status': False, 'path': 'build_basket'}
@@ -229,3 +238,66 @@ class SetupFoodBasket():
 				return res
 		else:
 			return res
+
+	def push_kitchen_tool(self, chef_id, kitchen_id):
+		res = { 'status': False, 'path': 'push_kitchen_tool' }
+		if self.user_id and self.basket_id:
+			if chef_id and kitchen_id:
+				basket = self.find_basket_id()
+				if basket:
+					try:
+						chefood = basket['foodchefs']
+						if any(chef_id == chfood['chef']['id'] for chfood in chefood):
+							indx = self.find_index_chef_id(chefood, chef_id)
+							for tool_id in kitchen_id:
+								if any(tool_id == kt['id'] for kt in chefood[indx]['kitchentool']):
+									pass
+								else:
+									chefood[indx].kitchentool.append(tool_id)
+							basket.save()
+							res = { 'status': True, 'path': 'push_kitchen_tool' }
+							return res
+						else:
+							return res
+					except Exception as e:
+						print(e)
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def pull_kitchen_tool(self, chef_id, kitchen_id):
+		res = { 'status': False, 'path': 'pull_kitchen_tool' }
+		if self.user_id and self.basket_id:
+			if chef_id and kitchen_id:
+				basket = self.find_basket_id()
+				if basket:
+					try:
+						chefood = basket['foodchefs']
+						if any(chef_id == chfood['chef']['id'] for chfood in chefood):
+							indx = self.find_index_chef_id(chefood, chef_id)
+							kitchentl = chefood[indx]['kitchentool']
+							if any(kitchen_id == i['kitchentool']['id'] for i in kitchentl):
+								indx = self.find_kitchentool(kitchentl, kitchen_id)
+								kitchentl.pop(indx)
+								basket.save()
+								res = { 'status': True, 'path': 'pull_kitchen_tool' }
+								return res
+							else:
+								return res
+						else:
+							return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
+
+	def who_bought_inggr(self):
+		pass

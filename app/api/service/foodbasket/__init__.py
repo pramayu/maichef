@@ -4,6 +4,7 @@ from app.api.service.foodbasket.pushfoodbasket import PushFoodBasket
 from app.api.service.foodbasket.pushfoodbasket import UpdateQuantiti
 from app.api.service.foodbasket.pushfoodbasket import PullFooditem
 from app.api.service.foodbasket.pushfoodbasket import PullFoodchef
+from app.api.service.foodbasket.pushfoodbasket import PushKitchenstuff
 
 class BasketServ(grap.ObjectType):
 	pushfoodbasket 			= PushFoodBasket.Field()
@@ -11,3 +12,4 @@ class BasketServ(grap.ObjectType):
 	pullfooditem 			= PullFooditem.Field()
 	pullfoodchef 			= PullFoodchef.Field()
 	buildfoodbasket 		= BuildFoodBasket.Field()
+	pushkitchenstuff 		= PushKitchenstuff.Field()
