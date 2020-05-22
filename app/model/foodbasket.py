@@ -78,7 +78,7 @@ class SetupFoodBasket():
 
 	def find_kitchentool(self, kitchentl, kitchen_id):
 		if self.user_id and self.basket_id:
-			indx = next((idx for(idx, i) in enumerate(kitchentl) if i['kitchentool']['id'] == kitchen_id), None)
+			indx = next((idx for(idx, i) in enumerate(kitchentl) if i['id'] == kitchen_id), None)
 			return indx
 
 	def build_basket(self):
@@ -280,7 +280,7 @@ class SetupFoodBasket():
 						if any(chef_id == chfood['chef']['id'] for chfood in chefood):
 							indx = self.find_index_chef_id(chefood, chef_id)
 							kitchentl = chefood[indx]['kitchentool']
-							if any(kitchen_id == i['kitchentool']['id'] for i in kitchentl):
+							if any(kitchen_id == i['id'] for i in kitchentl):
 								indx = self.find_kitchentool(kitchentl, kitchen_id)
 								kitchentl.pop(indx)
 								basket.save()
@@ -291,6 +291,7 @@ class SetupFoodBasket():
 						else:
 							return res
 					except Exception as e:
+						print(e)
 						return res
 				else:
 					return res
