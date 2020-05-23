@@ -6,6 +6,7 @@ from app.api.service.foodbasket.pushfoodbasket import PullFooditem
 from app.api.service.foodbasket.pushfoodbasket import PullFoodchef
 from app.api.service.foodbasket.pushfoodbasket import PushKitchenstuff
 from app.api.service.foodbasket.pushfoodbasket import PullKitchentool
+from app.api.service.foodbasket.pushfoodbasket import WhoBoughtInggr
 
 class BasketServ(grap.ObjectType):
 	pushfoodbasket 			= PushFoodBasket.Field()
@@ -15,3 +16,4 @@ class BasketServ(grap.ObjectType):
 	buildfoodbasket 		= BuildFoodBasket.Field()
 	pushkitchenstuff 		= PushKitchenstuff.Field()
 	pullkitchenstuff 		= PullKitchentool.Field()
+	whoboughtinggr 			= WhoBoughtInggr.Field()

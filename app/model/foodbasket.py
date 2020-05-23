@@ -5,7 +5,6 @@ from app.model.foodstuff import Foodstuff
 from app.model.user import User
 from app.model.chef import Chef
 from app.model.kitchentool import Kitchentool
-from app.common.middleware.JSONEncoder import JSONEncoder
 
 
 class Fooditem(db.EmbeddedDocument):
@@ -291,7 +290,6 @@ class SetupFoodBasket():
 						else:
 							return res
 					except Exception as e:
-						print(e)
 						return res
 				else:
 					return res
@@ -300,5 +298,24 @@ class SetupFoodBasket():
 		else:
 			return res
 
-	def who_bought_inggr(self):
-		pass
+	def who_bought_inggr(self, chef_id):
+		res = { 'status': False, 'path': 'who_bought_inggr' }
+		if self.user_id and self.basket_id:
+			if chef_id:
+				basket = self.find_basket_id()
+				if basket:
+					try:
+						chefood = basket['foodchefs']
+						indx = self.find_index_chef_id(chefood, chef_id)
+						chefood[indx]['ingredient'] = not chefood[indx]['ingredient']
+						basket.save()
+						res = { 'status': True, 'path': 'who_bought_inggr' }
+						return res
+					except Exception as e:
+						return res
+				else:
+					return res
+			else:
+				return res
+		else:
+			return res
