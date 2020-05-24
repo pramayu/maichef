@@ -12,3 +12,8 @@ class SetupUserRes(grap.ObjectType):
 	status			= grap.Boolean()
 	refreshtoken	= grap.String()
 	accessetoken	= grap.String()
+
+class SetupUserAttributeRes(grap.ObjectType):
+	path			= grap.String()
+	status			= grap.Boolean()
+	message 		= grap.String()
