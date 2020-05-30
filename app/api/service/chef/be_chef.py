@@ -22,7 +22,7 @@ class ToBeChef(grap.Mutation):
 			res 	= setup.be_chef()
 			if res['status'] == True:
 				payload = {
-					'id'		: payload['id'],
+					'id'		: payload['user_id'],
 					'username'	: payload['username'],
 					'chef'		: str(res['chef']['id']),
 					'exp'		: datetime.utcnow() + timedelta(days=5)

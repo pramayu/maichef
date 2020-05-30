@@ -6,6 +6,7 @@ from app.model.user import User as UserModel
 from app.model.chef import Chef as ChefModel
 from app.common.middleware.buildtoken import checktoken
 from app.common.middleware.JSONDecoder import JSONDecoder
+from app.common.middleware.JSONEncoder import JSONEncoder
 
 
 def requireauth(fn):
@@ -27,10 +28,12 @@ def requireauth(fn):
 							acc_token 	= checktoken(x_accesse_token)
 							acc_user_id	= JSONDecoder(acc_token['id'])
 
+							serializableId = JSONEncoder().encode(user['id'])
+
 							if user['id'] == acc_user_id:
 								current_user = {
 									'isAuth'	: True,
-									'user_id'	: user['id'],
+									'user_id'	: serializableId,
 									'username'	: user['username']
 								}
 							else:

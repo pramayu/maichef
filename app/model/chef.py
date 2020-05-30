@@ -96,18 +96,6 @@ class SetupChef():
 		self.chef_id 	= chef_id
 		self.str_id		= str_id
 
-	def be_chef(self):
-		res = { 'status': False, 'path':'chef' }
-		if self.user_id:
-			try:
-				chef = Chef(user=self.user_id)
-				store = chef.save()
-				res = { 'status': True, 'path':'chef', 'chef': store }
-				return res
-			except Exception as e:
-				return res
-		else:
-			return res
 
 	def chk_chef(self):
 		res = { 'status': False, 'path':'chef' }
@@ -121,6 +109,23 @@ class SetupChef():
 					return res
 			except Exception as e:
 				return res
+		else:
+			return res
+
+	def be_chef(self):
+		res = { 'status': False, 'path':'chef' }
+		if self.user_id:
+			chk_res = self.chk_chef()
+			if chk_res['status'] == True:
+				return res
+			else:
+				try:
+					chef = Chef(user=self.user_id)
+					store = chef.save()
+					res = { 'status': True, 'path':'chef', 'chef': store }
+					return res
+				except Exception as e:
+					return res
 		else:
 			return res
 
