@@ -5,7 +5,6 @@ from app.model.user import User
 from app.model.occupation import Occupation
 
 
-
 class Experience(db.EmbeddedDocument):
 	strid 			= db.StringField()
 	occupation		= db.ReferenceField(Occupation, dbref=True)
@@ -59,6 +58,7 @@ class ServiceArea(db.EmbeddedDocument):
 class BasicRule(db.EmbeddedDocument):
 	strid 			= db.StringField()
 	limit_task		= db.StringField()
+	range_work 		= db.StringField() #convert to seconds
 	rules			= db.ListField(db.StringField())
 
 	meta 			= {
@@ -85,6 +85,7 @@ class Chef(db.Document):
 			'build'
 		]
 	}
+
 
 
 
@@ -130,7 +131,6 @@ class SetupChef():
 		except Exception as e:
 			return []
 		
-
 	def push_experience(self, occupation, length_of_work, work_palce):
 		res = { 'status': False, 'path':'experience' }
 		if self.user_id and self.chef_id:
@@ -295,15 +295,16 @@ class SetupChef():
 		else:
 			return res
 
-	def store_basic_rule(self, limit_task, rules):
+	def store_basic_rule(self, limit_task, range_work, rules):
 		res = { 'status': False, 'path':'rule' }
 		if self.user_id and self.chef_id:
 			if len(limit_task) and len(rules) != 0:
 				req_fields = ['id']
 				chef = self.find_chef_id(req_fields)
+				work = int(range_work) * 3600
 				if chef:
 					try:
-						basic_rule = BasicRule(strid=uuid4().hex, limit_task=limit_task, rules=rules)
+						basic_rule = BasicRule(strid=uuid4().hex,range_work=str(work),limit_task=limit_task,rules=rules)
 						chef.basicrule = basic_rule
 						chef.save()
 						res = { 'status': True, 'path':'rule' }
@@ -317,7 +318,7 @@ class SetupChef():
 		else:
 			return res
 
-	def update_basic_rule(self, limit_task, rules):
+	def update_basic_rule(self, limit_task, range_work, rules):
 		res = { 'status': False, 'path':'rule' }
 		if self.user_id and self.chef_id:
 			if len(self.str_id) and len(limit_task) and len(rules) != 0:
@@ -328,6 +329,7 @@ class SetupChef():
 						temp = chef['basicrule']
 						if temp['strid'] == self.str_id:
 							temp['limit_task'] = limit_task
+							temp['range_work'] = range_work
 							temp['rules'] = rules
 							chef.save()
 							res = { 'status': True, 'path':'rule' }

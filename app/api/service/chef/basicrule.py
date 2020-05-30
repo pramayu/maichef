@@ -10,6 +10,7 @@ class StoreBasicRule(grap.Mutation):
 		userid			= grap.ID()
 		chefid			= grap.ID()
 		limittask		= grap.String()
+		rangework		= grap.String()
 		rules			= grap.List(grap.String)
 
 	Output 	= SetupChefRes
@@ -24,9 +25,10 @@ class StoreBasicRule(grap.Mutation):
 					user_id			= JSONDecoder(kwargs['userid'])
 					chef_id			= JSONDecoder(kwargs['chefid'])
 					limit_task		= kwargs['limittask']
+					range_work 		= kwargs['rangework']
 					rules			= kwargs['rules']
 					setup 			= SetupChef(user_id, chef_id)
-					res 			= setup.store_basic_rule(limit_task, rules)
+					res 			= setup.store_basic_rule(limit_task,range_work,rules)
 					return res
 				else:
 					return res
@@ -41,6 +43,7 @@ class UpdatBasicRule(grap.Mutation):
 		userid 			= grap.ID()
 		chefid 			= grap.ID()
 		limittask 		= grap.String()
+		rangework 		= grap.String()
 		rules 			= grap.List(grap.String)
 		strid 			= grap.ID()
 
@@ -56,10 +59,11 @@ class UpdatBasicRule(grap.Mutation):
 					user_id		= JSONDecoder(kwargs['userid'])
 					chef_id 	= JSONDecoder(kwargs['chefid'])
 					str_id		= kwargs['strid']
+					range_work 	= kwargs['rangework']
 					limit_task	= kwargs['limittask']
 					rules		= kwargs['rules']
 					setup 		= SetupChef(user_id, chef_id, str_id)
-					res 		= setup.update_basic_rule(limit_task, rules)
+					res 		= setup.update_basic_rule(limit_task,range_work,rules)
 					return res
 				else:
 					return res	

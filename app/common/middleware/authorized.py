@@ -3,6 +3,7 @@ from os import path
 from flask import request
 from functools import wraps
 from app.model.user import User as UserModel
+from app.model.chef import Chef as ChefModel
 from app.common.middleware.buildtoken import checktoken
 from app.common.middleware.JSONDecoder import JSONDecoder
 
@@ -21,13 +22,16 @@ def requireauth(fn):
 					if ref_token:
 						try:
 							user_id = JSONDecoder(kwargs['userid'])
-							user = UserModel.objects(id=user_id).only(*['id']).first()
-							acc_token = checktoken(x_accesse_token)
-							if JSONDecoder(acc_token['id']) == user['id']:
+							user = UserModel.objects(id=user_id).only(*['id','username']).first()
+															
+							acc_token 	= checktoken(x_accesse_token)
+							acc_user_id	= JSONDecoder(acc_token['id'])
+
+							if user['id'] == acc_user_id:
 								current_user = {
 									'isAuth'	: True,
-									'id'		: acc_token['id'],
-									'username'	: acc_token['username']
+									'user_id'	: user['id'],
+									'username'	: user['username']
 								}
 							else:
 								current_user

@@ -30,7 +30,7 @@ class Useraddress(db.Document):
 	regenci			= db.StringField()
 	province 		= db.StringField()
 	point 			= db.GeoPointField()
-	choosed			= db.BooleanField(default=False)
+	choosed			= db.BooleanField(default=True)
 	user 			= db.ReferenceField(User, dbref=True)
 
 	meta 			= {
@@ -149,6 +149,12 @@ class SetupUserAttribute():
 			indx = next((indx for (indx, i) in enumerate(addrs) if i['choosed'] == True), None)
 			return indx
 
+	def create_user_address(self, stre, rege, prov, poin):
+		if self.user_id:
+			addr = Useraddress(street=stre,regenci=rege,province=prov,point=poin,user=self.user_id)
+			save = addr.save()
+			return save
+
 	def update_choose_address(self, addrs, indx):
 		if self.user_id:
 			try:
@@ -167,10 +173,20 @@ class SetupUserAttribute():
 				prov		= attr['province']
 				poin 		= attr['point']
 				try:
-					addr = Useraddress(street=stre,regenci=rege,province=prov,point=poin,user=self.user_id)
-					addr.save()
-					res = {'status': True, 'path': 'push_user_address'}
-					return res
+					addrs = self.find_user_addrs()
+					if addrs:
+						addr = self.create_user_address(stre, rege, prov, poin)
+						if addr:
+							indx = self.find_index_true_addr(addrs)
+							Useraddress.objects(id=addrs[indx]['id']).update_one(choosed=False)
+						addr.save()
+						res = {'status': True, 'path': 'push_user_address'}
+						return res
+					else:
+						addr = self.create_user_address(stre, rege, prov, poin)
+						if addr:
+							res = {'status': True, 'path': 'push_user_address'}
+							return res
 				except Exception as e:
 					return res
 			else:
