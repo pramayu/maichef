@@ -1,5 +1,5 @@
 import os
-from pymongo import MongoClient
+# from pymongo import MongoClient
 from flask import Flask
 from app.api import schema
 from flask_graphql import GraphQLView
@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 
 app = Flask(__name__)
 load_dotenv()
-client = MongoClient(os.getenv('MONGODB_URI'))
 app.config.from_object(DevelopmentConf)
-# db = MongoEngine(app)
+# client = MongoClient(os.getenv('MONGODB_URI'))
+db = MongoEngine(app)
 
 @app.route('/')
 def index():
