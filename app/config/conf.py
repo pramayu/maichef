@@ -13,7 +13,7 @@ class DevelopmentConf(Config):
 	# MONGODB_PASSWORD='maichefs'
 	# MONGODB_USERNAME='maichefs'
 	# MONGODB_HOST="mongodb+srv://maichefs:maichefs@cluster0-mplbr.gcp.mongodb.net/db_maichefs?retryWrites=true&w=majority"
-	MONGODB_HOST=os.getenv('MONGODB_URI')
+	# MONGODB_HOST=os.getenv('MONGODB_URI')
 
 class ProductionConf(Config):
 	pass
