@@ -1,0 +1,63 @@
+food_basket_feature:
+  bought_ingredient(complete)
+  kitchentool(complete)
+  req_schedule(pending testing)
+
+  # update true when order created(completed)
+  # remove basket when order expired(pending/cronjob)
+  status(1/2)
+
+# update
+order_feature:
+  choose_address(complete)
+  checkout(pending)
+  attribute:
+    address
+    user
+    uniqcode
+    basket
+    mount
+    build
+
+  after_order:
+    send_email
+
+transaction:
+  update_chef_schedule after purchased(pending)
+  attribute:
+    transaction_id
+    payment_type
+    user_id
+    order_id
+    transaction_time
+    transaction_status #settlement,pending,canceled
+    actions: 
+      # generate-qr-code
+      # deeplink-redirect
+      # get-status
+      # cancel
+
+user:
+  user_address(complete)
+
+chef:
+  chef_schedule(complete)
+  range_work(complete) #convert to seconds
+
+# map
+basket => check_schedule => make_order => notif_chef => paid_order => update_scedule_order => notif_chef
+
+# req_schedule
+input_datetime => check_datetime_status && check total order => stored
+send notif if full order to order(belum bayar)
+
+# check schedule
+chef yang sama:
+  order(sudah bayar) => if schedule full => cancel order(belum bayar)
+
+# haven't tested
+request_schedule => if schedule 
+
+
+# cancel another order
+order_status => cancel => foodorder => false => notif user
