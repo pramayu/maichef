@@ -10,5 +10,8 @@ load_dotenv()
 app.config.from_object(DevelopmentConf)
 db = MongoEngine(app)
 
+@app.route('/')
+def index():
+	return "hello"
 
 app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
