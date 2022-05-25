@@ -22,7 +22,7 @@ midtransclient==1.1.1
 mongoengine==0.20.0
 promise==2.3
 pycparser==2.20
-PyJWT==1.7.1
+PyJWT==2.4.0
 pymongo[tls,srv]==3.10.1
 python-dotenv==0.13.0
 requests==2.23.0
